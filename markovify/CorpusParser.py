@@ -7,7 +7,7 @@ class CorpusParser:
         Reads all the files in root.
 
         :param root: Directory.
-        :param fileids: Files that have to be read. '.*' if all files have to be parsed.
+        :param fileids: List of files that have to be read. '.*' if all files have to be parsed.
         :param encoding: File enconding
         """
         self._reader = TaggedCorpusReader(root, fileids, encoding=encoding)
