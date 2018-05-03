@@ -44,3 +44,6 @@ PENN_TREEBANK_TAGSET = (
     '.',
     ':'
 )
+
+START_TAG = '<s>'
+END_TAG = '<e>'
