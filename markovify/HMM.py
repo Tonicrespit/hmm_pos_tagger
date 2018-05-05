@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 import markovify.Tagsets as Tagsets
 from markovify.CorpusParser import CorpusParser
 from markovify.Utils import increment, dict_to_matrix
@@ -112,6 +113,35 @@ class HMM(object):
 
         return pd.DataFrame(b, columns=unique_words, index=self.q)
 
-    # def to_json(self):
-    # def from_json(self):
+    def to_json(self, file=None):
+        """
+        Serializes the object to JSON.
+
+        :param file: File where the JSON has to be written. If file == None, the JSON string is returned.
+        :return: JSON string.
+        """
+        response = {
+            'a': self.a.to_dict(),
+            'b': self.b.to_dict(),
+            'q': self.q, "trained": self.trained
+        }
+
+        if file is not None:
+            with open(file, 'w') as outfile:
+                json.dump(response, outfile)
+        else:
+            return json.dumps(response)
+
+    def from_json(self, file):
+        """
+        Given a file with a JSON dump, retrieves the object.
+
+        :param file: Path to the file.
+        """
+        with open(file, 'r') as infile:
+            dict = json.load(infile)
+            self.q = tuple(dict['q'])
+            self.a = pd.DataFrame.from_dict(loaded['a'])
+            self.b = pd.DataFrame.from_dict(loaded['b'])
+            self.trained = dict['trained']
 
