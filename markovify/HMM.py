@@ -101,9 +101,10 @@ class HMM(object):
 
         for t in dictionary.keys():
             for w in dictionary[t].keys():
-                dict_b[w, t] = dictionary[t][w] / dictionary[t][0]
-                if w not in unique_words:
-                    unique_words.append(w)
+                if w != 0:
+                    dict_b[w, t] = dictionary[t][w] / dictionary[t][0]
+                    if w not in unique_words:
+                        unique_words.append(w)
 
         rows = len(self.q)
         cols = len(unique_words)
