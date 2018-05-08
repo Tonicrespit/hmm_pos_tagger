@@ -53,6 +53,8 @@ class HMM(object):
                 tag_word_count = increment(tag_word_count, tag, token)
                 bigram_states = increment(bigram_states, current, last)
 
+            bigram_states = increment(bigram_states, Tagsets.END_TAG, current)  # Link the last word with the stop tag
+
         self.q = tuple([Tagsets.START_TAG]) + tuple(bigram_states.keys())
         self.a = self.compute_a(bigram_states)
         self.b = self.compute_b(tag_word_count)
