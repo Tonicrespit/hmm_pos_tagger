@@ -1,1 +1,1 @@
-Janet/NNP will/MD back/VB the/DT bill/NN
+Janet/NNP will/MD back/VB the/DT bill/NN for/PP the/MD insurance/NN
