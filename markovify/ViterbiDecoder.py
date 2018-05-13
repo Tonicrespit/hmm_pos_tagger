@@ -12,7 +12,7 @@ class ViterbiDecoder:
 
     def viterbi(self, sentence):
         """
-        Using the traditional algorythm of Viterbi to get the most probable tag sequence for a sentence.
+        Using the traditional algorithm of Viterbi to get the most probable tag sequence for a sentence.
 
         :param sentence: List of words.
         :return: List of tags.
