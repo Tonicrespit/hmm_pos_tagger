@@ -25,19 +25,24 @@ class HMM(object):
         self.b = b
         self.trained = a is not None and b is not None  # If the user provides a and b, then we already have a model.
 
-    def train(self, root, fileids='.*', encoding='utf8'):
+    def train(self, sentences=None, root=None, fileids='.*', encoding='utf8'):
         """
         Trains the Hidden Markov Model.
 
+        :param sentences: Tagged sentences. If provided, the others arguments will be ignored.
         :param root: Directory.
         :param fileids: List of files that have to be read. '.*' if all files have to be parsed.
         :param encoding: File encoding. UTF-8 by default.
         """
+        if sentences is None and root is None:
+            return -1
+
         bigram_states = {}   # Counts the frequency of two states appearing one after the other.
         tag_word_count = {}  # Counts how many times has a tag.
 
-        reader = CorpusParser(root, fileids, encoding)
-        sentences = reader.tagged_sentences()
+        if sentences is None:
+            reader = CorpusParser(root, fileids, encoding)
+            sentences = reader.tagged_sentences()
 
         for sentence in sentences:
             current = Tagsets.START_TAG
