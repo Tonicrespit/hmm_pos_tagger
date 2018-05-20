@@ -59,9 +59,9 @@ class ViterbiDecoder:
         values = np.zeros(len(path_probabilities))
         for s2 in range(0, len(q)):
             if o is not None:
-                values[s2] = path_probabilities[s2] * a.loc[q[s2], q[s]] * b.loc[q[s], o]
+                values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s) * self.hmm.get_b(s, o)
             else:
-                values[s2] = path_probabilities[s2] * a.loc[q[s2], q[s]]
+                values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s)
 
         return np.max(values)
 
@@ -78,7 +78,7 @@ class ViterbiDecoder:
 
         values = np.zeros(len(path_probabilities))
         for s2 in range(0, len(q)):
-            values[s2] = path_probabilities[s2] * a.loc[q[s2], q[s]]
+            values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s)
 
         return np.argmax(values)
 

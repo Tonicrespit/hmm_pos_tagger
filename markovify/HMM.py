@@ -11,18 +11,22 @@ class HMM(object):
     Data structure to represent a Hidden Markov Model
     """
 
-    def __init__(self, q=None, a=None, b=None):
+    def __init__(self, q=None, a=None, b=None, smoothing='laplace', tag_count=None):
         """
         Init the data structure.
 
-        Keyword arguments:
-            q: set of states.
-            a: transition probability matrix. Each a[i, j] represents the probability of moving from state i to state j.
-            b: observation likelihoods. b[tag, word] = likelihood of 'word' being of class 'tag'
+        :param q: set of states.
+        :param a: transition probability matrix. Each a[i, j] represents the probability of moving from state i to j.
+        :param b: observation likelihoods. b[tag, word] = likelihood of 'word' being of class 'tag'
+        :param smoothing: Smoothing technique. Needed to deal with unknown words.
+        :param tag_count: Tag count. Used for LaPlace smoothing only.
         """
+        if smoothing in ['laplace', 'none']:
+            self.smoothing = smoothing
         self.q = q
-        self.a = a
-        self.b = b
+        self._a = a
+        self._b = b
+        self.tag_count = tag_count
         self.trained = a is not None and b is not None  # If the user provides a and b, then we already have a model.
 
     def train(self, sentences=None, root=None, fileids='.*', encoding='utf8'):
@@ -61,8 +65,9 @@ class HMM(object):
             bigram_states = increment(bigram_states, Tagsets.END_TAG, current)  # Link the last word with the stop tag
 
         self.q = tuple([Tagsets.START_TAG]) + tuple(bigram_states.keys())
-        self.a = self.compute_a(bigram_states)
-        self.b = self.compute_b(tag_word_count)
+        self._a = self.compute_a(bigram_states)
+        self._b = self.compute_b(tag_word_count)
+        self.tag_count = self.compute_tag_count(tag_word_count)
         self.trained = True
 
     def compute_a(self, dictionary):
@@ -117,9 +122,59 @@ class HMM(object):
         for (w, t) in dict_b:
             i = self.q.index(t)
             j = unique_words.index(w)
-            b[i, j] = dict_b[w, t]
+            if self.smoothing == 'none':
+                b[i, j] = dict_b[w, t]
+            elif self.smoothing == 'laplace':
+                if t in dictionary:
+                    count_t = dictionary[t][0]
+                else:
+                    count_t = 0
+                if t in dictionary and w in dictionary[t]:
+                    count_t_w = dictionary[t][w]
+                else:
+                    count_t_w = 0
+                b[i, j] = (count_t_w + 1) / (count_t + len(unique_words))
 
         return pd.DataFrame(b, columns=unique_words, index=self.q)
+
+    def compute_tag_count(self, dictionary):
+        """
+        Gets the count for each tag.
+
+        :param dictionary: Dictionary of tags.
+        :return:
+        """
+        count = np.zeros(len(self.q))
+        for tag in dictionary.keys():
+            i = self.q.index(tag)
+            count[i] += 1
+        return count
+
+    def get_a(self, s1, s0):
+        """
+        From matrix a get a get a[s1, s0]
+
+        :param s1: Current state.
+        :param s0: Previous state.
+        :return: transition probability.
+        """
+        return self._a.loc[self.q[s1], self.q[s0]]
+
+    def get_b(self, tag, word):
+        """
+        From matrix b get b[tag, word]
+
+        :param word: Word.
+        :param tag: Tag.
+        :return: Observation likelihood.
+        """
+        if word in self._b.columns:
+            return self._b.loc[self.q[tag], word]
+        else:
+            if self.smoothing == 'laplace':
+                return 1 / (self.tag_count[tag] + len(self._b.columns))
+            else:
+                return 0
 
     def to_json(self, file=None):
         """
@@ -128,15 +183,17 @@ class HMM(object):
         :param file: File where the JSON has to be written. If file == None, the JSON string is returned.
         :return: JSON string.
         """
-        response = {
-            'a': self.a.to_dict(),
-            'b': self.b.to_dict(),
+        data = {
+            'a': self._a.to_dict(),
+            'b': self._b.to_dict(),
+            'smoothing': self.smoothing,
+            'tag_count': self.tag_count,
             'q': self.q, "trained": self.trained
         }
 
         if file is not None:
             with open(file, 'w') as outfile:
-                json.dump(response, outfile)
+                json.dump(data, outfile)
         else:
             return json.dumps(response)
 
@@ -149,7 +206,9 @@ class HMM(object):
         with open(file, 'r') as infile:
             dict = json.load(infile)
             self.q = tuple(dict['q'])
-            self.a = pd.DataFrame.from_dict(loaded['a'])
-            self.b = pd.DataFrame.from_dict(loaded['b'])
+            self.smoothing = dict['smoothing']
+            self.tag_count = dict['tag_count']
+            self._a = pd.DataFrame.from_dict(loaded['a'])
+            self._b = pd.DataFrame.from_dict(loaded['b'])
             self.trained = dict['trained']
 
