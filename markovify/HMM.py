@@ -187,7 +187,7 @@ class HMM(object):
             'a': self._a.to_dict(),
             'b': self._b.to_dict(),
             'smoothing': self.smoothing,
-            'tag_count': self.tag_count,
+            'tag_count': self.tag_count.tolist(),
             'q': self.q, "trained": self.trained
         }
 
@@ -207,7 +207,7 @@ class HMM(object):
             dict = json.load(infile)
             self.q = tuple(dict['q'])
             self.smoothing = dict['smoothing']
-            self.tag_count = dict['tag_count']
+            self.tag_count = np.array(dict['tag_count'])
             self._a = pd.DataFrame.from_dict(loaded['a'])
             self._b = pd.DataFrame.from_dict(loaded['b'])
             self.trained = dict['trained']
