@@ -17,28 +17,27 @@ class ViterbiDecoder:
         :param sentence: List of words.
         :return: List of tags.
         """
-        a = self.hmm.a
-        b = self.hmm.b
-        q = self.hmm.q
-
-        path_probabilities = np.zeros((len(q), len(sentence) + 1))
-        backpointers = np.zeros((len(q), len(sentence) + 1))
-        for s in range(0, len(q)):
-            path_probabilities[s, 0] = a.loc['<s>', q[s]] * b.loc[q[s], sentence[0]]
+        path_probabilities = np.zeros((len(self.hmm.q), len(sentence) + 1))
+        backpointers = np.zeros((len(self.hmm.q), len(sentence) + 1))
+        for s in range(0, len(self.hmm.q)):
+            s0 = self.hmm.q.index(Tagsets.START_TAG)
+            w = sentence[0]
+            path_probabilities[s, 0] = self.hmm.get_a(s0, s) * self.hmm.get_b(s, w)
             backpointers[s, 0] = 0
 
         if len(sentence) > 1:
             for t in range(1, len(sentence)):
-                for s in range(0, len(q)):
+                for s in range(0, len(self.hmm.q)):
                     path_probabilities[s, t] = self._best_previous_path(path_probabilities[:, t - 1], s, sentence[t])
                     backpointers[s, t] = self._get_backpointer(path_probabilities[:, t - 1], s)
 
         t = len(sentence)
-        path_probabilities[q.index(Tagsets.END_TAG), t] = self._best_previous_path(path_probabilities[:, t - 1],
-                                                                                   q.index(Tagsets.END_TAG),
-                                                                                   None)
-        backpointers[q.index(Tagsets.END_TAG), t] = self._get_backpointer(path_probabilities[:, t - 1],
-                                                                          q.index(Tagsets.END_TAG))
+        end_tag_index = self.hmm.q.index(Tagsets.END_TAG)
+        path_probabilities[end_tag_index, t] = self._best_previous_path(path_probabilities[:, t - 1],
+                                                                        end_tag_index,
+                                                                        None)
+        backpointers[end_tag_index, t] = self._get_backpointer(path_probabilities[:, t - 1],
+                                                               end_tag_index)
         backtrace = self._get_best_path(backpointers)
         return backtrace
 
@@ -52,12 +51,8 @@ class ViterbiDecoder:
         :param o: Current word.
         :return: Maximum path probability when adding s to the tags
         """
-        a = self.hmm.a
-        b = self.hmm.b
-        q = self.hmm.q
-
         values = np.zeros(len(path_probabilities))
-        for s2 in range(0, len(q)):
+        for s2 in range(0, len(self.hmm.q)):
             if o is not None:
                 values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s) * self.hmm.get_b(s, o)
             else:
@@ -73,11 +68,8 @@ class ViterbiDecoder:
         :param path_probabilities: Vector of length len(q) with the path probabilities.
         :return: Tag that maximizes the path probability
         """
-        a = self.hmm.a
-        q = self.hmm.q
-
         values = np.zeros(len(path_probabilities))
-        for s2 in range(0, len(q)):
+        for s2 in range(0, len(self.hmm.q)):
             values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s)
 
         return np.argmax(values)
@@ -96,11 +88,14 @@ class ViterbiDecoder:
         pointer = np.argmax(col).astype(int)
         while ncol >= 0:
             col = backpointers[:, ncol]
-            if self.hmm.q[pointer] != Tagsets.END_TAG or self.hmm.q[pointer] != Tagsets.START_TAG:
-                tags.append(self.hmm.q[pointer])
+            tags.append(self.hmm.q[pointer])
             pointer = col[pointer].astype(int)
 
             ncol -= 1
 
+        if Tagsets.END_TAG in tags:
+            tags.remove(Tagsets.END_TAG)
+        if Tagsets.START_TAG in tags:
+            tags.remove(Tagsets.START_TAG)
         tags.reverse()
         return tags
