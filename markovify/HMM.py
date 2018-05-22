@@ -11,7 +11,7 @@ class HMM(object):
     Data structure to represent a Hidden Markov Model
     """
 
-    def __init__(self, q=None, a=None, b=None, smoothing='laplace', tag_count=None):
+    def __init__(self, q=None, a=None, b=None, smoothing='laplace', alpha=1, tag_count=None):
         """
         Init the data structure.
 
@@ -19,10 +19,14 @@ class HMM(object):
         :param a: transition probability matrix. Each a[i, j] represents the probability of moving from state i to j.
         :param b: observation likelihoods. b[tag, word] = likelihood of 'word' being of class 'tag'
         :param smoothing: Smoothing technique. Needed to deal with unknown words.
-        :param tag_count: Tag count. Used for LaPlace smoothing only.
+            - None: No smoothing is used. b[tag, word] = count(word, tag) / count(tag)
+            - Laplace: Additive smoothing. b[tag, word] = (count(word, tag) + alpha) / (count(tag) + alpha * size(vocabulary)).
+        :param alpha:
+        :param tag_count: Tag count. Used for trained models using LaPlace smoothing.
         """
         if smoothing in ['laplace', 'none']:
             self.smoothing = smoothing
+            self.alpha = alpha
         self.q = q
         self._a = a
         self._b = b
@@ -133,7 +137,7 @@ class HMM(object):
                     count_t_w = dictionary[t][w]
                 else:
                     count_t_w = 0
-                b[i, j] = (count_t_w + 1) / (count_t + len(unique_words))
+                b[i, j] = (count_t_w + self.alpha) / (count_t + self.alpha * len(unique_words))
 
         return pd.DataFrame(b, columns=unique_words, index=self.q)
 
@@ -172,7 +176,7 @@ class HMM(object):
             return self._b.loc[self.q[tag], word]
         else:
             if self.smoothing == 'laplace':
-                return 1 / (self.tag_count[tag] + len(self._b.columns))
+                return self.alpha / (self.tag_count[tag] + self.alpha * len(self._b.columns))
             else:
                 return 0
 
