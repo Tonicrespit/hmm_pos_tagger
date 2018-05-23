@@ -151,7 +151,7 @@ class HMM(object):
         count = np.zeros(len(self.q))
         for tag in dictionary.keys():
             i = self.q.index(tag)
-            count[i] += 1
+            count[i] += dictionary[tag][0]
         return count
 
     def get_a(self, s1, s0):
