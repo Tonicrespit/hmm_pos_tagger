@@ -3,7 +3,7 @@ import numpy as np
 import json
 import markovify.Tagsets as Tagsets
 from markovify.CorpusParser import CorpusParser
-from markovify.Utils import increment, dict_to_matrix
+from markovify.utils.Utils import increment
 
 
 class HMM(object):
@@ -154,7 +154,7 @@ class HMM(object):
             count[i] += dictionary[tag][0]
         return count
 
-    def get_a(self, s1, s0):
+    def transition_probability(self, s1, s0):
         """
         From matrix a get a get a[s1, s0]
 
@@ -164,7 +164,7 @@ class HMM(object):
         """
         return self._a.loc[self.q[s1], self.q[s0]]
 
-    def get_b(self, tag, word):
+    def observation_likelihood(self, tag, word):
         """
         From matrix b get b[tag, word]
 

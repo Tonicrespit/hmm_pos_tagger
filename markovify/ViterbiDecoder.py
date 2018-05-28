@@ -22,7 +22,7 @@ class ViterbiDecoder:
         for s in range(0, len(self.hmm.q)):
             s0 = self.hmm.q.index(Tagsets.START_TAG)
             w = sentence[0]
-            path_probabilities[s, 0] = self.hmm.get_a(s0, s) * self.hmm.get_b(s, w)
+            path_probabilities[s, 0] = self.hmm.transition_probability(s0, s) * self.hmm.observation_likelihood(s, w)
             backpointers[s, 0] = 0
 
         if len(sentence) > 1:
@@ -54,9 +54,9 @@ class ViterbiDecoder:
         values = np.zeros(len(path_probabilities))
         for s2 in range(0, len(self.hmm.q)):
             if o is not None:
-                values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s) * self.hmm.get_b(s, o)
+                values[s2] = path_probabilities[s2] * self.hmm.transition_probability(s2, s) * self.hmm.observation_likelihood(s, o)
             else:
-                values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s)
+                values[s2] = path_probabilities[s2] * self.hmm.transition_probability(s2, s)
 
         return np.max(values)
 
@@ -70,7 +70,7 @@ class ViterbiDecoder:
         """
         values = np.zeros(len(path_probabilities))
         for s2 in range(0, len(self.hmm.q)):
-            values[s2] = path_probabilities[s2] * self.hmm.get_a(s2, s)
+            values[s2] = path_probabilities[s2] * self.hmm.transition_probability(s2, s)
 
         return np.argmax(values)
 

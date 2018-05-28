@@ -19,10 +19,3 @@ def increment(dictionary, k1, k2):
     dictionary[k1][k2] += 1  # k1, k2 pair count
 
     return dictionary
-
-def dict_to_matrix(dictionary):
-    """
-
-    :param dictionary:
-    :return:
-    """
