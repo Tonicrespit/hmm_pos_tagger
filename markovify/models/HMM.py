@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 import json
-import markovify.Tagsets as Tagsets
-from markovify.CorpusParser import CorpusParser
-from markovify.utils.Utils import increment
+import markovify.models.Tagsets as Tagsets
+from ..utils.CorpusParser import CorpusParser
+from ..utils.Utils import increment
 
 
 class HMM(object):

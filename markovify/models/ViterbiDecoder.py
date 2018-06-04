@@ -1,5 +1,5 @@
 import numpy as np
-import markovify.Tagsets as Tagsets
+from . import Tagsets
 
 
 class ViterbiDecoder:
