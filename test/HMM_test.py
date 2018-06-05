@@ -1,15 +1,15 @@
-from markovify.HMM import HMM
-from markovify.ViterbiDecoder import ViterbiDecoder
+from markovify.markovify import markovify
+from markovify.utils.CrossValidation import cross_val_score
+
+from nltk.corpus import brown
 
 
 def HMM_test():
-    model = HMM()
-    model.train('.', 'test.txt')
-    print(model.a)
-    print(model.b)
+    corpus = brown.tagged_sents(categories='news', tagset='universal')
+    # mini_corpus = list(corpus[i] for i in range(0, 320))
 
-    decoder = ViterbiDecoder(model)
-    result = decoder.viterbi(["Janet", "will", "back", "the", "bill"])
+    m = markovify()
+    result = cross_val_score(m, sentences=corpus, verbose=True)
     print(result)
 
 
