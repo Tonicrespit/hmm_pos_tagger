@@ -28,7 +28,7 @@ class markovify:
         self.decoder = ViterbiDecoder(self.hmm)
         return self
 
-    def predict(self, sentence=None, sentences=None, root=None, fileids='.*', encoding='utf8'):
+    def predict(self, words=None, root=None, fileids='.*', encoding='utf8'):
         """
         Tags a sentence or a set of sentences.
 
@@ -37,8 +37,7 @@ class markovify:
             - Sentences.
             - Root.
 
-        :param sentence: List of tuples (word, tag).
-        :param sentences: List of sentences.
+        :param words: List (or list of lists) of tuples (word, tag).
         :param root: Folder with the text files indise.
         :param fileids: Files to read in the root. By default, '.*' which means 'all'.
         :param encoding: Encoding of the files.
@@ -48,11 +47,12 @@ class markovify:
             raise NotFittedError("This instance is not fitted yet. Call 'fit' with appropriate arguments before "
                                  "using this method.")
         tagged = []
-        if sentence is not None:
-            tagged.append(self.decoder.viterbi(sentence))
-        elif sentences is not None:
-            for sent in sentences:
-                tagged.append(self.decoder.viterbi(sent))
+        if words is not None:
+            if type(words[0]) is tuple:
+                tagged.append(self.decoder.viterbi(words))
+            else:
+                for sent in words:
+                    tagged.append(self.decoder.viterbi(sent))
         elif root is not None:
             reader = CorpusParser(root, fileids, encoding)
             sents = reader.sentences()
