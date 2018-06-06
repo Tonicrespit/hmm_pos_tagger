@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 import json
-import markovify.models.Tagsets as Tagsets
-from ..utils.CorpusParser import CorpusParser
-from ..utils.Utils import increment
+from . import Tagsets
+from ..Utils.CorpusParser import CorpusParser
+from ..Utils.Utils import increment
 
 
 class HMM(object):
@@ -22,7 +22,7 @@ class HMM(object):
             - None: No smoothing is used. b[tag, word] = count(word, tag) / count(tag)
             - Laplace: Additive smoothing. b[tag, word] = (count(word, tag) + alpha) / (count(tag) + alpha * size(vocabulary)).
         :param alpha:
-        :param tag_count: Tag count. Used for trained models using LaPlace smoothing.
+        :param tag_count: Tag count. Used for trained Models using LaPlace smoothing.
         """
         if smoothing in ['laplace', 'none']:
             self.smoothing = smoothing
@@ -191,8 +191,10 @@ class HMM(object):
             'a': self._a.to_dict(),
             'b': self._b.to_dict(),
             'smoothing': self.smoothing,
+            'alpha': self.alpha,
             'tag_count': self.tag_count.tolist(),
-            'q': self.q, "trained": self.trained
+            'q': self.q,
+            "trained": self.trained
         }
 
         if file is not None:
@@ -211,8 +213,32 @@ class HMM(object):
             dict = json.load(infile)
             self.q = tuple(dict['q'])
             self.smoothing = dict['smoothing']
+            self.alpha = dict['alpha']
             self.tag_count = np.array(dict['tag_count'])
             self._a = pd.DataFrame.from_dict(loaded['a'])
             self._b = pd.DataFrame.from_dict(loaded['b'])
             self.trained = dict['trained']
+
+    def copy(self):
+        """
+        Make a deep copy of the object.
+
+        :return: Copy.
+        """
+        a, b, q, tag_count = None, None, None, None
+
+        if self._a is not None:
+            a = self._a.copy()
+        if self._b is not None:
+            b = self._b.copy()
+        if self.q is not None:
+            q = self.q
+        if self.tag_count is not None:
+            tag_count = np.copy(self.tag_count)
+        smoothing = self.smoothing
+        alpha = self.alpha
+
+        return HMM(q, a, b, smoothing, alpha, tag_count)
+
+
 

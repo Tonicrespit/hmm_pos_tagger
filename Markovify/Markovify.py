@@ -1,9 +1,9 @@
-from markovify.models.HMM import HMM
-from markovify.models.ViterbiDecoder import  ViterbiDecoder
-from .utils.CorpusParser import CorpusParser
+from .Models.HMM import HMM
+from .Models.ViterbiDecoder import ViterbiDecoder
+from .Utils.CorpusParser import CorpusParser
 
 
-class markovify:
+class Markovify:
     def __init__(self, smoothing='laplace', alpha=1):
         """
         Inits the model.
@@ -48,7 +48,7 @@ class markovify:
                                  "using this method.")
         tagged = []
         if words is not None:
-            if type(words[0]) is tuple:
+            if type(words[0]) is str:
                 tagged.append(self.decoder.viterbi(words))
             else:
                 for sent in words:
@@ -61,3 +61,17 @@ class markovify:
                 tagged.append(self.decoder.viterbi(sent))
 
         return tagged
+
+    def copy(self):
+        """
+        Make a deep copy of the object.
+
+        :return: Copy.
+        """
+        hmm = self.hmm.copy()
+        decoder = ViterbiDecoder(self.hmm)
+
+        copy = Markovify()
+        copy.hmm = hmm
+        copy.decoder = decoder
+        return copy
