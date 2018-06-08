@@ -1,4 +1,5 @@
 from .Scoring import accuracy
+from .Utils import get_words
 
 import numpy as np
 from sklearn.model_selection import KFold
@@ -26,8 +27,8 @@ def split(nsentences, cv):
         yield train_index, test_index
 
 
-def cros_validation_score(model, sentence=None, sentences=None, root=None, fileids='.*', encoding='utf8', cv=5,
-                          return_model=False, verbose=False):
+def cross_validation_score(model, sentence=None, sentences=None, root=None, fileids='.*', encoding='utf8', cv=5,
+                           return_model=False, verbose=False):
     """
         Performs a cross-validation training to the model and returns the best accuracy.
 
@@ -63,18 +64,15 @@ def cros_validation_score(model, sentence=None, sentences=None, root=None, filei
 
         train = list(corpus[i] for i in train_index)
         test = list(corpus[i] for i in test_index)
-        test_words = _remove_tags(test)
 
         m = model.copy()
         m = m.fit(train)
         if verbose:
             print('Making predictions...')
 
-        prediction = m.predict(test_words)
-        predicted = [tag for sentence in prediction for tag in sentence]
-        real = [tag for sentence in test for (word, tag) in sentence]
+        predicted_taggs = m.predict(test)
 
-        model_score = accuracy(predicted, real)
+        model_score = accuracy(test, predicted_taggs)
         scores[fold] = model_score
         if return_model and model_score >= np.max(scores):
             best_model = m
@@ -104,23 +102,5 @@ def cross_validation(model, sentence=None, sentences=None, root=None, fileids='.
     :param verbose: Get additional information of the training via standard output.
     :return: List of accuracies.
     """
-    socres, best_model = cros_validation_score(model, sentence, sentences, root, fileids, encoding, cv, verbose)
+    socres, best_model = cross_validation_score(model, sentence, sentences, root, fileids, encoding, cv, verbose)
     return best_model
-
-
-def _remove_tags(corpus):
-    """
-    Removes the tags from a corpus, returning only the words.
-
-    :param corpus: List of (lists of) words.
-    :return: corpus without tags.
-    """
-    if type(corpus[0]) is tuple:
-        words = [word for (word, tag) in corpus]
-    else:
-        words = []
-        for sentence in corpus:
-            words.append(list(word for (word, tag) in sentence))
-
-    return words
-

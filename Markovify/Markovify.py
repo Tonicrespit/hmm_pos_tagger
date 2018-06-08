@@ -1,6 +1,7 @@
 from .Models.HMM import HMM
 from .Models.ViterbiDecoder import ViterbiDecoder
 from .Utils.CorpusParser import CorpusParser
+from .Utils.Utils import get_words
 
 
 class Markovify:
@@ -48,6 +49,7 @@ class Markovify:
                                  "using this method.")
         tagged = []
         if words is not None:
+            words = get_words(words)
             if type(words[0]) is str:
                 tagged.append(self.decoder.viterbi(words))
             else:
