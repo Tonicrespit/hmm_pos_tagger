@@ -126,7 +126,7 @@ class HMM(object):
         for (w, t) in dict_b:
             i = self.q.index(t)
             j = unique_words.index(w)
-            if self._smoothing == 'none':
+            if self._smoothing == 'none' or self._smoothing == 'max':
                 b[i, j] = dict_b[w, t]
             elif self._smoothing == 'laplace':
                 if t in dictionary:
@@ -177,6 +177,12 @@ class HMM(object):
         else:
             if self._smoothing == 'laplace':
                 return self._alpha / (self.tag_count[tag] + self._alpha * len(self._b.columns))
+            elif self._smoothing == 'max':
+                most_probable_tag = np.argmax(self.tag_count)
+                if tag == most_probable_tag:
+                    return 1
+                else:
+                    return 0
             else:
                 return 0
 

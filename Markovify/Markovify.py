@@ -5,7 +5,7 @@ from .Utils.Utils import get_words
 
 
 class Markovify:
-    def __init__(self, smoothing='laplace', alpha=1):
+    def __init__(self, smoothing='max', alpha=None):
         """
         Inits the model.
 
