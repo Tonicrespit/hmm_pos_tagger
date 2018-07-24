@@ -24,9 +24,9 @@ class HMM(object):
         :param alpha:
         :param tag_count: Tag count. Used for trained Models using LaPlace smoothing.
         """
-        if smoothing in ['laplace', 'none']:
-            self.smoothing = smoothing
-            self.alpha = alpha
+        if smoothing in ['laplace', 'max', 'none']:
+            self._smoothing = smoothing
+            self._alpha = alpha
         self.q = q
         self._a = a
         self._b = b
@@ -126,9 +126,9 @@ class HMM(object):
         for (w, t) in dict_b:
             i = self.q.index(t)
             j = unique_words.index(w)
-            if self.smoothing == 'none':
+            if self._smoothing == 'none':
                 b[i, j] = dict_b[w, t]
-            elif self.smoothing == 'laplace':
+            elif self._smoothing == 'laplace':
                 if t in dictionary:
                     count_t = dictionary[t][0]
                 else:
@@ -137,7 +137,7 @@ class HMM(object):
                     count_t_w = dictionary[t][w]
                 else:
                     count_t_w = 0
-                b[i, j] = (count_t_w + self.alpha) / (count_t + self.alpha * len(unique_words))
+                b[i, j] = (count_t_w + self._alpha) / (count_t + self._alpha * len(unique_words))
 
         return pd.DataFrame(b, columns=unique_words, index=self.q)
 
@@ -175,8 +175,8 @@ class HMM(object):
         if word in self._b.columns:
             return self._b.loc[self.q[tag], word]
         else:
-            if self.smoothing == 'laplace':
-                return self.alpha / (self.tag_count[tag] + self.alpha * len(self._b.columns))
+            if self._smoothing == 'laplace':
+                return self._alpha / (self.tag_count[tag] + self._alpha * len(self._b.columns))
             else:
                 return 0
 
@@ -190,8 +190,8 @@ class HMM(object):
         data = {
             'a': self._a.to_dict(),
             'b': self._b.to_dict(),
-            'smoothing': self.smoothing,
-            'alpha': self.alpha,
+            'smoothing': self._smoothing,
+            'alpha': self._alpha,
             'tag_count': self.tag_count.tolist(),
             'q': self.q,
             "trained": self.trained
@@ -212,8 +212,8 @@ class HMM(object):
         with open(file, 'r') as infile:
             dict = json.load(infile)
             self.q = tuple(dict['q'])
-            self.smoothing = dict['smoothing']
-            self.alpha = dict['alpha']
+            self._smoothing = dict['smoothing']
+            self._alpha = dict['alpha']
             self.tag_count = np.array(dict['tag_count'])
             self._a = pd.DataFrame.from_dict(loaded['a'])
             self._b = pd.DataFrame.from_dict(loaded['b'])
@@ -235,8 +235,8 @@ class HMM(object):
             q = self.q
         if self.tag_count is not None:
             tag_count = np.copy(self.tag_count)
-        smoothing = self.smoothing
-        alpha = self.alpha
+        smoothing = self._smoothing
+        alpha = self._alpha
 
         return HMM(q, a, b, smoothing, alpha, tag_count)
 
