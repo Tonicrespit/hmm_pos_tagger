@@ -3,6 +3,8 @@ from .Models.ViterbiDecoder import ViterbiDecoder
 from .Utils.CorpusParser import CorpusParser
 from .Utils.Utils import get_words
 
+from multiprocessing import Pool
+
 
 class Markovify:
     def __init__(self, smoothing='max', alpha=None):
@@ -29,7 +31,7 @@ class Markovify:
         self.decoder = ViterbiDecoder(self.hmm)
         return self
 
-    def predict(self, words=None, root=None, fileids='.*', encoding='utf8'):
+    def predict(self, words=None, root=None, fileids='.*', encoding='utf8', n_jobs=8):
         """
         Tags a sentence or a set of sentences.
 
@@ -42,25 +44,28 @@ class Markovify:
         :param root: Folder with the text files indise.
         :param fileids: Files to read in the root. By default, '.*' which means 'all'.
         :param encoding: Encoding of the files.
+        :param n_jobs: Number of CPUs used to compute the predictions.
         :return: List (or list of lists) of tags, deppending on input's structure.
         """
         if self.decoder is None:
             raise NotFittedError("This instance is not fitted yet. Call 'fit' with appropriate arguments before "
                                  "using this method.")
-        tagged = []
         if words is not None:
             words = get_words(words)
             if type(words[0]) is str:
-                tagged.append(self.decoder.viterbi(words))
+                tagged = self.decoder.viterbi(words)
             else:
-                for sent in words:
-                    tagged.append(self.decoder.viterbi(sent))
+                # tagged = [self.decoder.viterbi(sent) for sent in words]
+                with Pool(processes=n_jobs) as pool:
+                    tagged = pool.map(self.decoder.viterbi, words)
+
         elif root is not None:
             reader = CorpusParser(root, fileids, encoding)
             sents = reader.sentences()
 
-            for sent in sents:
-                tagged.append(self.decoder.viterbi(sent))
+            with Pool(processes=n_jobs) as pool:
+                tagged = pool.map(self.decoder.viterbi, sents)
+            # tagged = [self.decoder.viterbi(sent) for sent in sents]
 
         return tagged
 

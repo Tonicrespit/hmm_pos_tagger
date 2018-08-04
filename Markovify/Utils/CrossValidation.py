@@ -28,7 +28,7 @@ def split(nsentences, cv):
 
 
 def cross_validation_score(model, sentence=None, sentences=None, root=None, fileids='.*', encoding='utf8', cv=5,
-                           return_model=False, verbose=False):
+                           return_model=False, verbose=False, n_jobs=8):
     """
         Performs a cross-validation training to the model and returns the best accuracy.
 
@@ -41,6 +41,7 @@ def cross_validation_score(model, sentence=None, sentences=None, root=None, file
         :param cv: Number of folds for the cross-validation.
         :param return_model: True if you want to get the best model. False otherwise.
         :param verbose: Get additional information of the training via standard output.
+        :param n_jobs: Number of CPUs used to compute the predictions.
         :return: List of accuracies.
         """
     if sentence is not None:
@@ -70,7 +71,7 @@ def cross_validation_score(model, sentence=None, sentences=None, root=None, file
         if verbose:
             print('Making predictions...')
 
-        predicted_taggs = m.predict(test)
+        predicted_taggs = m.predict(test, n_jobs=n_jobs)
 
         model_score = accuracy(test, predicted_taggs)
         scores[fold] = model_score
