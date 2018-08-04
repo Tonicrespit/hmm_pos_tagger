@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 import sklearn.metrics
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -6,10 +7,15 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from .Utils import get_tags
 
 
-def confusion_matrix(true_tags, pred_tags, sample_weight=None):
+def confusion_matrix(true_tags, pred_tags, sample_weight=None, normalize=True):
     true_tags, pred_tags, tags = _pre_process(true_tags, pred_tags, binarize=False)
 
-    return sklearn.metrics.confusion_matrix(true_tags, pred_tags, labels=tags, sample_weight=sample_weight)
+    cm = sklearn.metrics.confusion_matrix(true_tags, pred_tags, labels=tags, sample_weight=sample_weight)
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    cm = pd.DataFrame(cm, index=tags, columns=tags)
+    return cm
 
 
 def accuracy(true_tags, pred_tags, normalize=True, sample_weight=None):
