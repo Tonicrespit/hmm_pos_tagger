@@ -1,4 +1,4 @@
-from .Scoring import accuracy
+from .Scoring import *
 from .Utils import get_words
 
 import numpy as np
@@ -57,7 +57,8 @@ def cross_validation_score(model, sentence=None, sentences=None, root=None, file
     if len(corpus) < cv:
         raise ValueError('A corpus of lesser length than folds cannot be cross-validated.')
 
-    scores = np.zeros(cv)
+    scores = []
+    max_score = -1
     fold = 0
     for train_index, test_index in split(len(corpus), cv):
         if verbose:
@@ -74,9 +75,15 @@ def cross_validation_score(model, sentence=None, sentences=None, root=None, file
         predicted_taggs = m.predict(test, n_jobs=n_jobs)
 
         model_score = accuracy(test, predicted_taggs)
-        scores[fold] = model_score
-        if return_model and model_score >= np.max(scores):
+        scores.append({
+            'accuracy': accuracy(test, predicted_taggs),
+            'precision': precision(test, predicted_taggs),
+            'recall': recall(test, predicted_taggs)
+        })
+
+        if return_model and model_score >= max_score:
             best_model = m
+            max_score = model_score
 
         if verbose:
             print('Ending fold {} of {}. Score: {}.'.format(fold + 1, cv, scores[fold]))
