@@ -3,7 +3,7 @@
 # Setup.
 
 1. Install Python 3.6 or later. If you are not sure about the version you have installed, type `python -V` or `python3 -V` in your terminal.
-2. 
+2.  
 
 # Running the included examples.
 There is a 
