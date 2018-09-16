@@ -6,7 +6,9 @@
 2.  
 
 # Running the included examples.
-There is a 
+There is a Jupyter notebook with some examples and experiments using Hidden Markov Models. To use it, you just need to have Jupyter notebook installed (check the guide at [Jupyter's documentation](https://jupyter.readthedocs.io/en/latest/install.html)).
+
+The notebook doesn't have any dependency other than the ones you have already installed.
 
 # Quick start example.
 
