@@ -1,5 +1,6 @@
 # Custom
-# test/test.txt
+test/*
+*test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
