@@ -2,8 +2,8 @@
 
 # Setup.
 
-1. Install Python 3.6 or later as described in the [official guide](https://docs.python.org/3.6/using/index.html). You can check the version you have by typing `python3 -V` in your terminal.
-2. Install [pip](https://pip.pypa.io/en/stable/installing/).
+1. Install Python 3.6 or later as described in the [official guide](https://docs.python.org/3.6/using/index.html). You can check whether you have the correct version by typing `python3 -V` in your terminal.
+2. Install [pip](https://pip.pypa.io/en/stable/installing/) for Python3.
 3. Install the following Python libraries using pip3:
     - pandas
     - nltk
@@ -11,7 +11,7 @@
     - scipy
     - sklearn
 
-Install the NLTK resources using python's console:
+Download the NLTK resources using python's console:
 
 ```python
 import nltk
@@ -20,22 +20,22 @@ nltk.download('brown')
 nltk.download('universal_tagset')
 ```
 
-You can run HelloWorld.py to check if you have all the dependencies installed:
+To test if you have done everything properly, run the `HelloWorld.py` script:
 
 ```
 python3 HelloWorld.py
 ```
 
 # Running the included examples.
-There is a Jupyter notebook with some examples and experiments using Hidden Markov Models. To use it, you just need to have Jupyter notebook installed (check the guide at [Jupyter's documentation](https://jupyter.readthedocs.io/en/latest/install.html)).
+There is a Jupyter notebook with some examples and experiments named `Examples.py`. To run it, you need to have Jupyter notebook installed (check the guide at [Jupyter's documentation](https://jupyter.readthedocs.io/en/latest/install.html)).
 
-If you want to run the file as-is you need to install the following Python libraries:
+And the following Python libraries:
     - Matplotlib
     - Seaborn
 
 # Quick start example.
 
-First of all you need to import the model wrapper that includes everything you need for training and decoding.
+First of all you need to import the model wrapper.
 
 ```python
 from HMM.Markovify import *
@@ -53,7 +53,7 @@ from nltk.corpus import brown
 corpus = brown.tagged_sents(categories='news', tagset='universal')
 ```
 
-The NLTK library provides the corpora as a list of sentences, each sentence represented by a list of words. Each word is a tuple (word, tag). For example:
+The NLTK library provides the corpora as a list of sentences, each represented as a list of words. Each word is a tuple (word, tag). For example:
 
 ```python
 [[("Sentence", "NOUN"), ("1", "Number")],
@@ -76,10 +76,10 @@ To train the model you just have to call the function `fit` with the corpus. The
 model = model.fit(sentences=corpus)
 ```
 
-Once the model is trained, we create a decoder:
+Once the model is trained, you can start decoding text:
 
 ```python
 decoder = model.predict(["I", "went", "to", "school", "yesterday", "."])
 ```
 
-Do you want more examples? Please check the included Jupyter notebook!
+For more examples, please check the example Jupyter notebook!
