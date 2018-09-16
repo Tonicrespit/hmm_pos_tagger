@@ -2,13 +2,36 @@
 
 # Setup.
 
-1. Install Python 3.6 or later. If you are not sure about the version you have installed, type `python -V` or `python3 -V` in your terminal.
-2.  
+1. Install Python 3.6 or later as described in the [official guide](https://docs.python.org/3.6/using/index.html). You can check the version you have by typing `python3 -V` in your terminal.
+2. Install [pip](https://pip.pypa.io/en/stable/installing/).
+3. Install the following Python libraries using pip3:
+    - pandas
+    - nltk
+    - numpy
+    - scipy
+    - sklearn
+
+Install the NLTK resources using python's console:
+
+```python
+import nltk
+
+nltk.download('brown')
+nltk.download('universal_tagset')
+```
+
+You can run HelloWorld.py to check if you have all the dependencies installed:
+
+```
+python3 HelloWorld.py
+```
 
 # Running the included examples.
 There is a Jupyter notebook with some examples and experiments using Hidden Markov Models. To use it, you just need to have Jupyter notebook installed (check the guide at [Jupyter's documentation](https://jupyter.readthedocs.io/en/latest/install.html)).
 
-The notebook doesn't have any dependency other than the ones you have already installed.
+If you want to run the file as-is you need to install the following Python libraries:
+    - Matplotlib
+    - Seaborn
 
 # Quick start example.
 
