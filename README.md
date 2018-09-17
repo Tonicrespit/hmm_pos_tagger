@@ -15,7 +15,7 @@ sudo apt-get install python3-pip
     - scipy
     - sklearn
 
-In ubuntu:
+In Ubuntu:
 
 ```sh
 pip3 install pandas
@@ -30,7 +30,7 @@ Download the NLTK resources using python's console: (run python3 in a ubuntu ter
 ```python
 import nltk #Fetch the base library
 
-nltk.download('brown') # Install the assets
+nltk.download('brown') # Download and install the assets
 nltk.download('universal_tagset')
 
 quit() # Exit console
@@ -48,10 +48,11 @@ There is a Jupyter notebook with some examples and experiments named `Examples.p
 If you are on Ubuntu, you can directly type `sudo apt-get install jupyter-notebook` (or `sudo aptitude install jupyter-notebook`) to download and set up Jupyter Notebook.
 
 And the following Python libraries:
-    - Matplotlib
-    - Seaborn
 
-To run the notebook, navigate to the project's folder (`cd path/to/folder`) and use the command `jupyter notebook .` (if it doesn't work for you, try `jupyter-notebook .). In a few seconds a browser window should open were you can select the file `Examples.ipynb`.
+    - Matplotlib (`pip3 install matplotlib`)
+    - Seaborn (`pip3 install seaborn`)
+
+To run the notebook, navigate to the project's folder (`cd path/to/folder`) and use the command `jupyter notebook .` (if it doesn't work, try `jupyter-notebook .`). In a few seconds a browser window will open and you will be able to read and run the file `Examples.ipynb`.
 
 # Quick start example.
 
