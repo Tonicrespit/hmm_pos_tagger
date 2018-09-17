@@ -3,7 +3,11 @@
 # Setup.
 
 1. Install Python 3.6 or later as described in the [official guide](https://docs.python.org/3.6/using/index.html). You can check whether you have the correct version by typing `python3 -V` in your terminal.
-2. Install [pip](https://pip.pypa.io/en/stable/installing/) for Python3.
+2. Install [pip](https://pip.pypa.io/en/stable/installing/) for Python3. In ubuntu:
+sudo aptitude install python3-pip
+or
+sudo apt-get install python3-pip
+
 3. Install the following Python libraries using pip3:
     - pandas
     - nltk
@@ -11,13 +15,25 @@
     - scipy
     - sklearn
 
-Download the NLTK resources using python's console:
+In ubuntu:
+
+```sh
+pip3 install pandas
+pip3 install nltk
+pip3 install numpy
+pip3 install scipy
+pip3 install sklearn
+```
+
+Download the NLTK resources using python's console: (run python3 in a ubuntu terminal)
 
 ```python
-import nltk
+import nltk #Fetch the base library
 
-nltk.download('brown')
+nltk.download('brown') # Install the assets
 nltk.download('universal_tagset')
+
+quit() # Exit console
 ```
 
 To test if you have done everything properly, run the `HelloWorld.py` script:
@@ -29,9 +45,13 @@ python3 HelloWorld.py
 # Running the included examples.
 There is a Jupyter notebook with some examples and experiments named `Examples.py`. To run it, you need to have Jupyter notebook installed (check the guide at [Jupyter's documentation](https://jupyter.readthedocs.io/en/latest/install.html)).
 
+If you are on Ubuntu, you can directly type `sudo apt-get install jupyter-notebook` (or `sudo aptitude install jupyter-notebook`) to download and set up Jupyter Notebook.
+
 And the following Python libraries:
     - Matplotlib
     - Seaborn
+
+To run the notebook, navigate to the project's folder (`cd path/to/folder`) and use the command `jupyter notebook .` (if it doesn't work for you, try `jupyter-notebook .). In a few seconds a browser window should open were you can select the file `Examples.ipynb`.
 
 # Quick start example.
 
