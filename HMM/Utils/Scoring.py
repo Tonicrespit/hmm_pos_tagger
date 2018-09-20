@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 import pandas as pd
 import numpy as np
 
@@ -24,7 +27,7 @@ def accuracy(true_tags, pred_tags, normalize=True, sample_weight=None):
     return sklearn.metrics.accuracy_score(true_tags, pred_tags, normalize, sample_weight)
 
 
-def precision(true_tags, pred_tags, average='macro', sample_weight=None):
+def precision(true_tags, pred_tags, average='weighted', sample_weight=None):
     true_tags, pred_tags, tags = _pre_process(true_tags, pred_tags, binarize=False)
 
     return sklearn.metrics.precision_score(true_tags, pred_tags,
